@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.13.0/themes/base/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.0/jquery-ui.js"></script>
+    <style>
+        .border{
+            padding: 10px;
+            height: max-content;
+            width: 30%;
+        }
+        .foot {
+            position: fixed;
+            left: 10%;
+            bottom: 0;
+            width: 80%;
+            text-align: center;
+        }
+        ul li{
+            list-style-type: none;
+            width: fit-content;
+            padding: 5px;
+            margin: 5px;
+            background-color: bisque;
+        }
+        .addBtn{
+            margin-top: 5px;
+        }
+    </style>
+    <title>Create Call</title>
+</head>
+<body class="container border w-100 mt-5">
+    <a href="{% url 'Home' %}">Home</a>
+    <h1 class="h1">Create New Call</h1>
+    {% if key %}
+    <form action="{% url 'updateCall' pk=key.id %}" method="POST">
+        {% csrf_token %}
+        <p><input type="hidden" name="agentid" value="{{request.session.Id}}"></p>
+        <p>Call Nature: <select name="cnature" class="form-control" id="">
+            {% for p in pro %}
+            <option value="{{p.id}}" id="">{{p.type}}</option>
+            {% endfor %}
+        </select></p>
+        <p>Serial No.: <select name="srnumber" class="form-control" id="">
+            {% for p in protype %}
+            <option value="{{p.id}}" id="">{{p.serialNumber}}</option>
+            {% endfor %}
+        </select></p>
+        <p>Customer Contact: <select name="ccont" class="form-control" id="">
+            {% for p in protype %}
+            <option value="{{p.id}}" id="">{{p.custContact}}</option>
+            {% endfor %}
+        </select></p>
+        
+        <p>Remark: <textarea class="form-control" name="remark" id="remark" placeholder="Add Remark">{{key.remark}}</textarea></p>
+        <div class="container bg-light p-3 border w-100">
+        <div class="form-group">
+            <label for=""> Action:</label>
+            <input list="actions" class="form-control w-50" type="text" id="myInput" placeholder="Add Your Actions Here..">
+            <datalist id="actions">
+                {% for ac in act %}
+                <option value="{{ac.actionDetail}}">
+                {% endfor %}
+              </datalist>
+            <span onclick="newElement()" class="btn btn-primary addBtn">Add</span>
+        </div>
+        <ul class="list-group border form-control" id="myUL">           
+        </ul>
+        <input type="hidden" id="action1" name="action1" value="{{key.action}}" required>
+
+        <script>
+            var  actions_list="{{key.action}}";
+            if (actions_list!='')
+            {
+                    var out='';
+                    actions_list= actions_list.split(',')
+                    for (var i=0;i< actions_list.length-1;i++)
+                    {
+
+                        out+='<li name="action">'+actions_list[i].trim()+'</li>'
+
+                    }
+                    document.getElementById('myUL').innerHTML=out;
+            }
+
+            </script>
+        </div>
+        <div class="container bg-light mt-4 p-3 border w-100">
+        <div class="form-group">
+            <label for=""> Approval:</label>
+            <input list="approvals" class="form-control w-50" type="text" id="myInput2" placeholder="Add Your Approvals Here..">
+            <datalist id="approvals">
+                {% for ap in appr %}
+                <option value="{{ap.approvalDetail}}">
+                {% endfor %}
+              </datalist>
+            <span onclick="addApprove()" class="btn btn-primary addBtn">Add</span>
+        </div>
+        
+        <ul class="list-group border form-control" id="myUL2">
+        </ul>
+        <input type="hidden" name="approval" id="approval" value="{{key.approval}}">
+
+
+        <script>
+            var  actions_list="{{key.approval | safe }}";
+            if (actions_list!='')
+            {
+                    var out='';
+                    actions_list= actions_list.split(',')
+                    for (var i=0;i< actions_list.length-1;i++)
+                    {
+
+                        out+='<li name="action">'+actions_list[i].trim()+'</li>'
+
+                    }
+                    document.getElementById('myUL2').innerHTML=out;
+            }
+
+            </script>
+
+        </div>
+        <a class="btn btn-danger mt-3" href="{% url 'Home' %}">Cancel</a>
+        <input class="btn btn-success mt-3" type="submit" value="Update">
+        {% endif %}
+        </form>
+        
+        <script>
+            // Create a "close" button and append it to each list item
+            var myNodelist = document.getElementsByTagName("LI");
+            var i;
+            for (i = 0; i < myNodelist.length; i++) {
+              var span = document.createElement("SPAN");
+              var txt = document.createTextNode("\u00D7");
+              span.className = "close";
+              span.appendChild(txt);
+              myNodelist[i].appendChild(span);
+            }
+            
+            // Click on a close button to hide the current list item
+            var close = document.getElementsByClassName("close");
+            var i;
+            for (i = 0; i < close.length; i++) {
+              close[i].onclick = function() 
+              {
+                var div = this.parentElement;
+                var hid = document.getElementById("action1").value;
+
+                console.log(hid)
+                div.style.display = "none";
+                update_hid_inpu('myUL')
+                update_hid_inpu('myUL2')
+              }
+              
+            }
+            
+            
+            // Create a new list item when clicking on the "Add" button
+            function newElement() {
+              var li = document.createElement("li")
+              var inputValue = document.getElementById("myInput").value;
+              var t = document.createTextNode(inputValue);
+              li.appendChild(t);
+              if (inputValue === '') {
+                alert("You must write something!");
+              } else 
+              {
+                document.getElementById("myUL").appendChild(li);
+                document.getElementById("myUL").nextElementSibling.value+=inputValue.trim()+','
+               
+
+              }
+              document.getElementById("myInput").value = "";
+            
+              var span = document.createElement("SPAN");
+              var txt = document.createTextNode("\u00D7");
+              span.className = "close";
+              span.appendChild(txt);
+              li.appendChild(span);
+            
+              for (i = 0; i < close.length; i++) {
+                close[i].onclick = function() 
+                {
+                        var div = this.parentElement;
+                        div.style.display = "none";
+                        update_hid_inpu("myUL")
+                }
+              }
+              $(li).attr('name','action')
+             
+
+             
+            }
+            function update_hid_inpu(id)
+            {
+
+
+                var  children= document.getElementById(id).childNodes
+                var newval=''
+                children.forEach(function(item){
+                    console.log(item);
+                    //alert(item)
+                    var  a= item.style
+                    var st=a.display
+                    console.log(st)
+            
+                    if (st !='none'  && (item.innerText).trim() !='')
+                    { 
+                       // alert(item.innerText)
+                        var a=(item.innerText).trim()
+                        a= a.replaceAll('\u00D7','')
+                       // alert(a)
+                        
+                        a=a.replace(/[^a-zA-Z ]/g, "");
+                        newval+=a.trim()+','  
+                      
+                    }
+                    newval= newval.replaceAll('×','')
+                   
+                    newval= newval.replaceAll(' ,',',')
+                    
+                   
+                });
+              document.getElementById(id).nextElementSibling.value=newval
+
+
+            }
+            function addApprove() {
+              var li = document.createElement("li");
+              var inputValue = document.getElementById("myInput2").value;
+              var t = document.createTextNode(inputValue);
+              li.appendChild(t);
+              if (inputValue === '') {
+                alert("You must write something!");
+              } else {
+                document.getElementById("myUL2").appendChild(li);
+                document.getElementById("myUL2").nextElementSibling.value+=inputValue.trim()+','
+              }
+              document.getElementById("myInput2").value = "";
+            
+              var span = document.createElement("SPAN");
+              var txt = document.createTextNode("\u00D7");
+              span.className = "close";
+              span.appendChild(txt);
+              li.appendChild(span);
+            
+              for (i = 0; i < close.length; i++) {
+                close[i].onclick = function() {
+                  var div = this.parentElement;
+                  div.style.display = "none";
+                  update_hid_inpu("myUL2")
+                }
+              }
+              $(li).attr('name','approve')
+            }
+            </script>
+        
+</body>
+</html>

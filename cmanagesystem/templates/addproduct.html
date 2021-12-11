@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Product</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.13.0/themes/base/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.0/jquery-ui.js"></script>
+</head>
+<body>
+    <div class="container mt-4">
+        <h1>Add New Product</h1>
+        <form action="{% url 'productAdd' %}" method="POST">
+            {% csrf_token %}
+            <p>Serial No. <input class="form-control" type="text" name="serialNo" id="serialNo"></p>
+            <p>Product Name: <select class="form-control" name="pname" id="">
+                {% for p in prodN %}
+                <option value="{{p.id}}" id="">{{p.prodName}}</option>
+                {% endfor %}
+            </select></p>
+            <p>Item Type: <select class="form-control" name="itrm" id="">
+                {% for p in itemT %}
+                <option value="{{p.id}}" id="">{{p.type}}</option>
+                {% endfor %}
+            </select></p>
+            <p>Customer Name: <input class="form-control" type="text" name="cname" id="cname"></p>
+            <p>Contact: <input class="form-control" type="text" name="ccont" id=""></p>
+            <p>Address: <input class="form-control" type="text" name="address" id=""></p>
+            <p>Region: <input class="form-control" type="text" name="region" id=""></p>            
+            <p><input type="submit" value="Submit"></p>
+        </form>
+    </div>
+</body>
+</html>
